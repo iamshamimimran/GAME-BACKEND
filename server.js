@@ -8,6 +8,8 @@ const gameRoutes = require("./routes/gameRoutes");
 const { Server } = require("socket.io");
 const gameSocket = require("./sockets/gameSocket");
 const hostRoutes = require("./routes/hostRoutes");
+const pdfRoutes = require("./routes/pdfRoutes");
+
 dotenv.config();
 
 const app = express();
@@ -24,6 +26,7 @@ app.use(express.json());
 app.use("/api/mcqs", mcqRoutes);
 app.use("/api/game", gameRoutes);
 app.use("/api/hosts", hostRoutes);
+app.use("/api/pdf", pdfRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)
