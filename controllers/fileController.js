@@ -4,7 +4,6 @@ const fs = require("fs");
 const { extractTextFromPDF } = require("../utils/pdfHelper.js");
 const { askGemini } = require("../utils/geminiHelp.js");
 
-// Create new file record
 const createFile = async (req, res) => {
   try {
     const { title, description } = req.body;
@@ -59,7 +58,16 @@ const analyzeFileWithGemini = async (req, res) => {
         .json({ error: "No readable content found in PDFs" });
     }
 
-    const prompt = `${question}\n\n\nHere is the full content from the file:\n${combinedText}`;
+    const prompt = `You are an intelligent assistant. Use the following content to answer the user's question as accurately and helpfully as possible.
+
+Question:
+${question}
+
+Content:
+${combinedText}
+
+Please extract relevant information only from the content provided above. If the answer is not present in the content, say "The answer is not found in the provided content." Do not make up information.`;
+
     const answer = await askGemini(prompt);
 
     res.json({ answer });
