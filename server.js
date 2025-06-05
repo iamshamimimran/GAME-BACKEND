@@ -9,6 +9,7 @@ const { Server } = require("socket.io");
 const gameSocket = require("./sockets/gameSocket");
 const hostRoutes = require("./routes/hostRoutes");
 const pdfRoutes = require("./routes/pdfRoutes");
+const fileRoutes = require("./routes/fileRoutes");
 
 dotenv.config();
 
@@ -28,6 +29,8 @@ app.use("/api/game", gameRoutes);
 app.use("/api/hosts", hostRoutes);
 app.use("/api/pdf", pdfRoutes);
 
+app.use("/uploads", express.static("uploads")); // Serve uploaded files
+app.use("/api", fileRoutes);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
