@@ -1,8 +1,11 @@
 const mongoose = require("mongoose");
 
 const mcqSchema = new mongoose.Schema({
-  sourceType: String, // 'pdf' or 'prompt'
-  sourceContent: String, // prompt text or filename
+  sourceType: String,
+  sourceContent: String,
+  difficulty: String,
+  numberOfQuestions: Number,
+
   questions: [
     {
       question: String,

@@ -3,18 +3,9 @@ require("dotenv").config();
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const generateMcqs = async (text) => {
-  const prompt = `Generate exactly 5 multiple-choice questions with 4 options (a, b, c, d) each from the following content. Format each question like this:
-
-Question: ...
-a) ...
-b) ...
-c) ...
-d) ...
-Answer: ...\n\n and please write the full answer only instaed of a b c d 
-Only follow this exact format. Do not include explanations.
-
-Content:
-${text}`;
+  const prompt = `
+${text}
+`;
 
   const response = await axios.post(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
@@ -31,7 +22,7 @@ ${text}`;
 const parseMcqs = (text) => {
   const questions = [];
 
-  const blocks = text.trim().split(/\n{2,}/); // split by 2+ newlines
+  const blocks = text.trim().split(/\n{2,}/);
 
   for (const block of blocks) {
     const lines = block.split("\n").map((l) => l.trim());
@@ -65,7 +56,7 @@ const parseMcqs = (text) => {
     }
   }
 
-  return questions.slice(0, 5); // only take the first 5 clean MCQs
+  return questions;
 };
 
 module.exports = { generateMcqs };
