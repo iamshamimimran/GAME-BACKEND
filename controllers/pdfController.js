@@ -19,15 +19,10 @@ exports.uploadPdf = async (req, res) => {
         .json({ error: "No file uploaded or file is empty." });
     }
 
-    console.log("Uploaded file:", file);
-
     const dataBuffer = fs.readFileSync(file.path);
-    console.log("PDF buffer loaded, size:", dataBuffer.length);
 
     const pdfData = await pdfParse(dataBuffer);
     memorizedPdfText = pdfData.text;
-
-    console.log("Extracted PDF text:", memorizedPdfText);
 
     fs.unlinkSync(file.path); // Clean up
 
@@ -155,5 +150,35 @@ ${memorizedPdfText}`;
   } catch (error) {
     console.error("Error in generateFromMemory:", error);
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.generateSummary = async (req, res) => {
+  try {
+    if (!memorizedPdfText || memorizedPdfText.trim() === "") {
+      return res
+        .status(400)
+        .json({ error: "No PDF text memorized. Please upload a PDF first." });
+    }
+
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    const prompt = `
+      Please generate a concise summary of the following text. 
+      Focus on the main ideas, key points, and important details.
+      Keep the summary to about 200-300 words.
+      
+      Text:
+      ${memorizedPdfText}
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const summary = response.text();
+
+    res.status(200).json({ summary });
+  } catch (err) {
+    console.error("Summary generation error:", err);
+    res.status(500).json({ error: "Failed to generate summary." });
   }
 };
